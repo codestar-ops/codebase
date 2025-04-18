@@ -1,0 +1,282 @@
+Slip 17 Q.1
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Activity Lifecycle Demo"
+        android:textSize="24sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+
+java file
+
+package com.example.myapplication;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    String TAG = "ActivityLifecycle";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toast.makeText(this, "onCreate", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate called");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onStart called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onResume called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onRestart called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onDestroy called");
+    }
+}
+
+
+
+Q.2 
+
+plugin.xml
+
+<plugin id="cordova-plugin-contact-helper" version="1.0.0"
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <name>ContactPlugin</name>
+
+    <js-module src="www/ContactPlugin.js" name="ContactPlugin">
+        <clobbers target="ContactPlugin"/>
+    </js-module>
+
+    <platform name="android">
+        <source-file src="src/android/ContactPlugin.java" target-dir="src/com/example/ContactPlugin"/>
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.READ_CONTACTS"/>
+            <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+        </config-file>
+    </platform>
+</plugin>
+
+
+ContactPlugin.java (Java)
+
+package com.example.ContactPlugin;
+
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.provider.ContactsContract;
+import android.database.Cursor;
+import android.net.Uri;
+
+import org.apache.cordova.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+
+public class ContactPlugin extends CordovaPlugin {
+
+    @Override
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
+        Context context = this.cordova.getActivity().getApplicationContext();
+
+        try {
+            if (action.equals("createContact")) {
+                String name = args.getString(0);
+                createContact(context, name);
+                callbackContext.success("Contact created: " + name);
+                return true;
+
+            } else if (action.equals("searchContact")) {
+                String name = args.getString(0);
+                boolean found = searchContact(context, name);
+                callbackContext.success(found ? "Contact found" : "Contact not found");
+                return true;
+
+            } else if (action.equals("deleteContact")) {
+                String name = args.getString(0);
+                boolean deleted = deleteContact(context, name);
+                callbackContext.success(deleted ? "Contact deleted" : "Contact not found");
+                return true;
+
+            } else if (action.equals("cloneContact")) {
+                String name = args.getString(0);
+                boolean cloned = cloneContact(context, name);
+                callbackContext.success(cloned ? "Contact cloned" : "Original not found");
+                return true;
+            }
+        } catch (Exception e) {
+            callbackContext.error("Error: " + e.getMessage());
+            return false;
+        }
+
+        return false;
+    }
+
+    private void createContact(Context context, String name) throws Exception {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+        ops.add(ContentProviderOperation.newInsert(
+                ContactsContract.RawContacts.CONTENT_URI)
+            .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+            .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+            .build());
+
+        ops.add(ContentProviderOperation.newInsert(
+                ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            .withValue(ContactsContract.Data.MIMETYPE,
+                    ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+            .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+            .build());
+
+        context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+    }
+
+    private boolean searchContact(Context context, String name) {
+        Cursor cursor = context.getContentResolver().query(
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME + " = ?",
+                new String[]{name},
+                null);
+
+        boolean found = (cursor != null && cursor.getCount() > 0);
+        if (cursor != null) cursor.close();
+        return found;
+    }
+
+    private boolean deleteContact(Context context, String name) {
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME + " = ?",
+                new String[]{name},
+                null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            long contactId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+            Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI,
+                    cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)));
+
+            cr.delete(lookupUri, null, null);
+            cursor.close();
+            return true;
+        }
+
+        if (cursor != null) cursor.close();
+        return false;
+    }
+
+    private boolean cloneContact(Context context, String name) throws Exception {
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME + " = ?",
+                new String[]{name},
+                null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String newName = name + " Clone";
+            createContact(context, newName);
+            cursor.close();
+            return true;
+        }
+
+        if (cursor != null) cursor.close();
+        return false;
+    }
+}
+
+
+Sample JS to Use the Plugin (ContactPlugin.js)
+
+var ContactPlugin = {
+    createContact: function(name, success, error) {
+        cordova.exec(success, error, "ContactPlugin", "createContact", [name]);
+    },
+    searchContact: function(name, success, error) {
+        cordova.exec(success, error, "ContactPlugin", "searchContact", [name]);
+    },
+    deleteContact: function(name, success, error) {
+        cordova.exec(success, error, "ContactPlugin", "deleteContact", [name]);
+    },
+    cloneContact: function(name, success, error) {
+        cordova.exec(success, error, "ContactPlugin", "cloneContact", [name]);
+    }
+};
+
+
+
+Usage in HTML
+
+<script>
+    function addContact() {
+        ContactPlugin.createContact("Alice", alert, alert);
+    }
+
+    function search() {
+        ContactPlugin.searchContact("Alice", alert, alert);
+    }
+
+    function remove() {
+        ContactPlugin.deleteContact("Alice", alert, alert);
+    }
+
+    function clone() {
+        ContactPlugin.cloneContact("Alice", alert, alert);
+    }
+</script>

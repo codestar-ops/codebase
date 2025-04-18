@@ -1,0 +1,227 @@
+Q.1 
+
+🔧 1. activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:text="Activity Lifecycle Demo"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+
+
+🔧 2. MainActivity.java
+
+package com.example.lifecycledemo;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    String TAG = "LifecycleDemo";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        showToast("onCreate called");
+        Log.d(TAG, "onCreate called");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showToast("onStart called");
+        Log.d(TAG, "onStart called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showToast("onResume called");
+        Log.d(TAG, "onResume called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        showToast("onPause called");
+        Log.d(TAG, "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        showToast("onStop called");
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        showToast("onRestart called");
+        Log.d(TAG, "onRestart called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        showToast("onDestroy called");
+        Log.d(TAG, "onDestroy called");
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+}
+
+
+📌 AndroidManifest.xml (minimal)
+
+<application
+    android:allowBackup="true"
+    android:label="@string/app_name"
+    android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+    <activity android:name=".MainActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+    </activity>
+</application>
+
+
+
+Q.2 
+
+🔹 1. DBHelper.java
+
+package com.example.customerdatabase;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    public static final String DB_NAME = "CustomerDB";
+    public static final String TABLE_NAME = "Customer";
+
+    public DBHelper(Context context) {
+        super(context, DB_NAME, null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)");
+        insertInitialData(db);
+    }
+
+    private void insertInitialData(SQLiteDatabase db) {
+        insertCustomer(db, 1, "Alice", "Mumbai", "9876543210");
+        insertCustomer(db, 2, "Bob", "Delhi", "9123456780");
+        insertCustomer(db, 3, "Charlie", "Pune", "9988776655");
+        insertCustomer(db, 4, "David", "Chennai", "8877665544");
+        insertCustomer(db, 5, "Eva", "Bangalore", "8765432190");
+    }
+
+    private void insertCustomer(SQLiteDatabase db, int id, String name, String address, String ph_no) {
+        ContentValues values = new ContentValues();
+        values.put("id", id);
+        values.put("name", name);
+        values.put("address", address);
+        values.put("ph_no", ph_no);
+        db.insert(TABLE_NAME, null, values);
+    }
+
+    public Cursor getAllCustomers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
+    }
+}
+
+
+
+🔹 2. activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/listViewCustomers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+
+
+🔹 3. MainActivity.java
+
+package com.example.customerdatabase;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    ListView listView;
+    DBHelper dbHelper;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        listView = findViewById(R.id.listViewCustomers);
+        dbHelper = new DBHelper(this);
+
+        showCustomerData();
+    }
+
+    private void showCustomerData() {
+        Cursor cursor = dbHelper.getAllCustomers();
+        ArrayList<String> customerList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            String record = "ID: " + cursor.getInt(0) +
+                            ", Name: " + cursor.getString(1) +
+                            ", Address: " + cursor.getString(2) +
+                            ", Phone: " + cursor.getString(3);
+            customerList.add(record);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, customerList);
+        listView.setAdapter(adapter);
+    }
+}

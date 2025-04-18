@@ -1,0 +1,187 @@
+Q.1 
+
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello, Android!"
+        android:textSize="30sp"
+        android:textColor="#FFFFFF" />
+</RelativeLayout>
+
+
+
+🔷 2. colors.xml
+<resources>
+    <color name="background_color">#3F51B5</color> <!-- Blue -->
+</resources>
+
+
+
+🔷 3. MainActivity.java
+
+package com.example.mycolorfontapp;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+}
+
+
+
+
+🔷 4. AndroidManifest.xml
+<application
+    android:allowBackup="true"
+    android:label="@string/app_name"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+    <activity android:name=".MainActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+    </activity>
+</application>
+
+
+
+Q,2
+
+🔷 1. DatabaseHelper.java (for SQLite operations)
+package com.example.projectapp;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentValues;
+import android.database.Cursor;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+    public static final String DATABASE_NAME = "ProjectDB";
+    public static final String TABLE_NAME = "Project";
+    public static final String COL1 = "id";
+    public static final String COL2 = "name";
+    public static final String COL3 = "dept";
+    public static final String COL4 = "city";
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_NAME +
+                " (id INTEGER PRIMARY KEY, name TEXT, dept TEXT, city TEXT)");
+
+        // Insert initial 5 records
+        insertInitialData(db);
+    }
+
+    private void insertInitialData(SQLiteDatabase db) {
+        insertData(db, 1, "Project A", "IT", "Pune");
+        insertData(db, 2, "Project B", "HR", "Mumbai");
+        insertData(db, 3, "Project C", "Finance", "Delhi");
+        insertData(db, 4, "Project D", "IT", "Bangalore");
+        insertData(db, 5, "Project E", "Marketing", "Chennai");
+    }
+
+    private void insertData(SQLiteDatabase db, int id, String name, String dept, String city) {
+        ContentValues values = new ContentValues();
+        values.put(COL1, id);
+        values.put(COL2, name);
+        values.put(COL3, dept);
+        values.put(COL4, city);
+        db.insert(TABLE_NAME, null, values);
+    }
+
+    public Cursor getAllRecords() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
+    }
+}
+
+
+
+🔷 2. activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <ListView
+        android:id="@+id/projectListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+
+🔷 3. MainActivity.java
+
+package com.example.projectapp;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    DatabaseHelper dbHelper;
+    ListView projectListView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        dbHelper = new DatabaseHelper(this);
+        projectListView = findViewById(R.id.projectListView);
+
+        displayProjects();
+    }
+
+    private void displayProjects() {
+        Cursor cursor = dbHelper.getAllRecords();
+        ArrayList<String> list = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            String record = "ID: " + cursor.getInt(0) +
+                    ", Name: " + cursor.getString(1) +
+                    ", Dept: " + cursor.getString(2) +
+                    ", City: " + cursor.getString(3);
+            list.add(record);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, list);
+        projectListView.setAdapter(adapter);
+    }
+}

@@ -1,0 +1,226 @@
+Q.1 
+
+🔧 1. activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Task"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>
+
+
+
+🔧 2. MainActivity.java
+
+package com.example.progressbarexample;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    ProgressBar progressBar;
+    Button startButton;
+    int progressStatus = 0;
+    Handler handler = new Handler(); // for UI update
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        progressBar = findViewById(R.id.progressBar);
+        startButton = findViewById(R.id.startButton);
+
+        startButton.setOnClickListener(view -> {
+            progressBar.setVisibility(View.VISIBLE);
+            progressStatus = 0;
+
+            new Thread(() -> {
+                while (progressStatus < 100) {
+                    progressStatus += 1;
+
+                    // Update the progress bar
+                    handler.post(() -> progressBar.setProgress(progressStatus));
+
+                    try {
+                        // Sleep to simulate time-consuming task
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Hide progress bar after completion
+                handler.post(() -> progressBar.setVisibility(View.GONE));
+            }).start();
+        });
+    }
+}
+
+
+
+
+📋 AndroidManifest.xml
+
+<application
+    android:allowBackup="true"
+    android:label="@string/app_name"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+    <activity android:name=".MainActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
+</application>
+
+
+
+
+
+Q.2 
+
+🔹 1. DBHelper.java
+
+package com.example.employeedb;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    public static final String DB_NAME = "EmployeeDB";
+    public static final String TABLE_NAME = "Employee";
+
+    public DBHelper(Context context) {
+        super(context, DB_NAME, null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_NAME + " (E_id INTEGER PRIMARY KEY, name TEXT, address TEXT, ph_no TEXT)");
+        insertInitialData(db);
+    }
+
+    private void insertInitialData(SQLiteDatabase db) {
+        insertEmployee(db, 1, "Alice", "Pune", "9876543210");
+        insertEmployee(db, 2, "Bob", "Mumbai", "9123456780");
+        insertEmployee(db, 3, "Charlie", "Delhi", "9988776655");
+        insertEmployee(db, 4, "David", "Chennai", "8877665544");
+        insertEmployee(db, 5, "Eva", "Bangalore", "8765432190");
+    }
+
+    private void insertEmployee(SQLiteDatabase db, int id, String name, String address, String phone) {
+        ContentValues cv = new ContentValues();
+        cv.put("E_id", id);
+        cv.put("name", name);
+        cv.put("address", address);
+        cv.put("ph_no", phone);
+        db.insert(TABLE_NAME, null, cv);
+    }
+
+    public Cursor getAllEmployees() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
+    }
+}
+
+
+
+
+🔹 2. activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/listViewEmployees"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+
+
+🔹 3. MainActivity.java
+
+package com.example.employeedb;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    DBHelper dbHelper;
+    ListView listView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        listView = findViewById(R.id.listViewEmployees);
+
+        dbHelper = new DBHelper(this);
+        displayEmployees();
+    }
+
+    private void displayEmployees() {
+        Cursor cursor = dbHelper.getAllEmployees();
+        ArrayList<String> employeeList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            String data = "ID: " + cursor.getInt(0) +
+                          ", Name: " + cursor.getString(1) +
+                          ", Address: " + cursor.getString(2) +
+                          ", Phone: " + cursor.getString(3);
+            employeeList.add(data);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, employeeList);
+        listView.setAdapter(adapter);
+    }
+}
