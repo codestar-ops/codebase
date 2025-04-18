@@ -1,0 +1,329 @@
+Slip no.5 Q.1
+
+#XML FILE
+-----------------
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical">
+<TextView
+android:id="@+id/dialog_title"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="Alert Dialog"
+android:textSize="20sp"
+android:textStyle="bold"
+android:padding="16dp"
+android:gravity="center"/>
+<TextView
+android:id="@+id/dialog_message"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="This is an alert dialog."
+android:padding="16dp"/>
+<Button
+android:id="@+id/dialog_button"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:text="OK"
+android:onClick="dismissDialog"/>
+</LinearLayout>
+
+
+#XML FILE(dialog layout)
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="16dp">
+<TextView
+android:id="@+id/text_message"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="18sp"
+android:textStyle="bold" />
+<Button
+android:id="@+id/button_positive"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginTop="16dp"
+android:text="OK" />
+</LinearLayout>
+
+
+#JAVA FILE
+
+package com.example.pra18;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+import com.example.pra18.DialogFragmentAlert;
+public class MainActivity extends AppCompatActivity implements
+DialogFragmentAlert.DialogFragmentAlertListener {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+}
+public void showDialog(View view) {
+DialogFragmentAlert dialogFragment = new DialogFragmentAlert();
+dialogFragment.show(getSupportFragmentManager(), "dialog");
+}
+@Override
+public void onDialogPositiveClick(DialogFragmentAlert dialogFragment) {
+Toast.makeText(this, "Positive button clicked", Toast.LENGTH_SHORT).show();
+}
+}
+JAVA FILE(DialogFragmentAlert)
+package com.example.pra18;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import androidx.fragment.app.DialogFragment;
+public class DialogFragmentAlert extends DialogFragment {
+private DialogFragmentAlertListener mListener;
+@Override
+public Dialog onCreateDialog(Bundle savedInstanceState) {
+AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+builder.setView(getActivity().getLayoutInflater().inflate(R.layout.dialog_layout, null));
+builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+@Override
+public void onClick(DialogInterface dialog, int which) {
+mListener.onDialogPositiveClick(DialogFragmentAlert.this);
+}
+});
+return builder.create();
+}
+@Override
+public void onAttach(Context context) {
+super.onAttach(context);
+try {
+mListener = (DialogFragmentAlertListener) context;
+} catch (ClassCastException e) {
+throw new ClassCastException(context.toString() + " must implement
+DialogFragmentAlertListener");
+}
+}
+public interface DialogFragmentAlertListener {
+void onDialogPositiveClick(DialogFragmentAlert dialogFragment);
+}
+}
+
+
+
+
+Slip no.5 Q.2
+
+
+#XML FILE
+
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your name"
+            android:inputType="textPersonName"
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Text Style:"
+            android:layout_marginTop="20dp"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/boldCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bold" />
+
+        <CheckBox
+            android:id="@+id/italicCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Italic" />
+
+        <CheckBox
+            android:id="@+id/underlineCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Underline" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Text Color:"
+            android:layout_marginTop="20dp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/colorGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/redColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Red" />
+
+            <RadioButton
+                android:id="@+id/blueColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blue" />
+
+            <RadioButton
+                android:id="@+id/greenColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Green" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/displayBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Display" />
+
+            <Button
+                android:id="@+id/clearBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear"
+                android:layout_marginStart="20dp" />
+
+            <Button
+                android:id="@+id/exitBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exit"
+                android:layout_marginStart="20dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/outputLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="20sp"
+            android:layout_marginTop="30dp" />
+    </LinearLayout>
+</ScrollView>
+
+
+
+#JAVA FILE
+
+package com.example.myapplication;
+
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
+import android.view.View;
+import android.widget.*;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText nameInput;
+    CheckBox boldCheck, italicCheck, underlineCheck;
+    RadioButton redColor, blueColor, greenColor;
+    Button displayBtn, clearBtn, exitBtn;
+    TextView outputLabel;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        nameInput = findViewById(R.id.nameInput);
+        boldCheck = findViewById(R.id.boldCheck);
+        italicCheck = findViewById(R.id.italicCheck);
+        underlineCheck = findViewById(R.id.underlineCheck);
+        redColor = findViewById(R.id.redColor);
+        blueColor = findViewById(R.id.blueColor);
+        greenColor = findViewById(R.id.greenColor);
+        displayBtn = findViewById(R.id.displayBtn);
+        clearBtn = findViewById(R.id.clearBtn);
+        exitBtn = findViewById(R.id.exitBtn);
+        outputLabel = findViewById(R.id.outputLabel);
+
+        displayBtn.setOnClickListener(view -> {
+            String name = nameInput.getText().toString().trim();
+
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            SpannableString spanText = new SpannableString("Hello, " + name);
+
+            if (boldCheck.isChecked()) {
+                spanText.setSpan(new StyleSpan(Typeface.BOLD), 0, spanText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            if (italicCheck.isChecked()) {
+                spanText.setSpan(new StyleSpan(Typeface.ITALIC), 0, spanText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            if (underlineCheck.isChecked()) {
+                spanText.setSpan(new UnderlineSpan(), 0, spanText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            if (redColor.isChecked()) {
+                outputLabel.setTextColor(Color.RED);
+            } else if (blueColor.isChecked()) {
+                outputLabel.setTextColor(Color.BLUE);
+            } else if (greenColor.isChecked()) {
+                outputLabel.setTextColor(Color.GREEN);
+            } else {
+                outputLabel.setTextColor(Color.BLACK);
+            }
+
+            outputLabel.setText(spanText);
+        });
+
+        clearBtn.setOnClickListener(v -> {
+            nameInput.setText("");
+            outputLabel.setText("");
+            boldCheck.setChecked(false);
+            italicCheck.setChecked(false);
+            underlineCheck.setChecked(false);
+            redColor.setChecked(false);
+            blueColor.setChecked(false);
+            greenColor.setChecked(false);
+        });
+
+        exitBtn.setOnClickListener(v -> finish());
+    }
+}

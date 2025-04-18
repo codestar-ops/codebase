@@ -1,0 +1,152 @@
+Slip 12 Q.2
+
+#XML FILE
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".MainActivity">
+<EditText
+android:id="@+id/editTextName"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Enter your name"/>
+<EditText
+android:id="@+id/editTextMessage"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_below="@id/editTextName"
+android:hint="Enter your message"/>
+<Button
+android:id="@+id/buttonDisplay"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_below="@id/editTextMessage"
+android:text="Display"/>
+<Button
+android:id="@+id/buttonClear"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_below="@id/buttonDisplay"
+android:text="Clear"/>
+<TextView
+android:id="@+id/textViewResult"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_below="@id/buttonClear"
+android:textColor="@android:color/black"
+android:textSize="18sp"
+android:layout_marginTop="20dp"/>
+<RadioGroup
+android:id="@+id/radioGroupTextStyle"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_below="@id/textViewResult"
+android:orientation="horizontal">
+<RadioButton
+android:id="@+id/radioButtonBold"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Bold"/>
+<RadioButton
+android:id="@+id/radioButtonItalic"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Italic"/>
+<RadioButton
+android:id="@+id/radioButtonUnderline"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Underline"/>
+</RadioGroup>
+<CheckBox
+android:id="@+id/checkBoxRed"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Red"
+android:layout_below="@id/radioGroupTextStyle"/>
+<CheckBox
+android:id="@+id/checkBoxBlue"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Blue"
+android:layout_below="@id/radioGroupTextStyle"
+android:layout_toEndOf="@id/checkBoxRed"/>
+</RelativeLayout>
+
+#JAVA FILE
+
+package com.example.pra23;
+// MainActivity.java
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+private EditText editTextName, editTextMessage;
+private Button buttonDisplay, buttonClear;
+private TextView textViewResult;
+private RadioGroup radioGroupTextStyle;
+private CheckBox checkBoxRed, checkBoxBlue; // Add more CheckBoxes for other colors if needed
+private boolean isBold = false, isItalic = false, isUnderline = false;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+editTextName = findViewById(R.id.editTextName);
+editTextMessage = findViewById(R.id.editTextMessage);
+buttonDisplay = findViewById(R.id.buttonDisplay);
+buttonClear = findViewById(R.id.buttonClear);
+textViewResult = findViewById(R.id.textViewResult);
+radioGroupTextStyle = findViewById(R.id.radioGroupTextStyle);
+checkBoxRed = findViewById(R.id.checkBoxRed);
+checkBoxBlue = findViewById(R.id.checkBoxBlue);
+buttonDisplay.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+displayMessage();
+}
+});
+buttonClear.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+clearFields();
+}
+});
+}
+private void displayMessage() {
+String name = editTextName.getText().toString().trim();
+String message = editTextMessage.getText().toString().trim();
+String result = name + ": " + message;
+int style = 0;
+if (isBold) style += Typeface.BOLD;
+if (isItalic) style += Typeface.ITALIC;
+textViewResult.setText(result);
+textViewResult.setTypeface(null, style);
+if (isUnderline) textViewResult.setPaintFlags(textViewResult.getPaintFlags() |
+Paint.UNDERLINE_TEXT_FLAG);
+int color = Color.BLACK;
+if (checkBoxRed.isChecked()) color = Color.RED;
+else if (checkBoxBlue.isChecked()) color = Color.BLUE;
+// Add more conditions for other colors if needed
+textViewResult.setTextColor(color);
+}
+private void clearFields() {
+editTextName.setText("");
+editTextMessage.setText("");
+textViewResult.setText("");
+radioGroupTextStyle.clearCheck();
+checkBoxRed.setChecked(false);
+checkBoxBlue.setChecked(false);
+// Uncheck other color CheckBoxes if added
+}
+}

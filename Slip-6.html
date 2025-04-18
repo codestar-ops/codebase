@@ -1,0 +1,156 @@
+Slip No.6 Q.1
+
+#XML FILE
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/textViewSignup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Not a member? Sign Up now."
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_blue_dark"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
+
+
+#JAVA FILE
+-----------------
+package com.example.myapplication;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+    private EditText editTextUsername, editTextPassword;
+    private Button buttonLogin;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        editTextUsername = findViewById(R.id.editTextUsername);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        buttonLogin = findViewById(R.id.buttonLogin);
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View view) {
+                                               String username = editTextUsername.getText().toString();
+                                               String password = editTextPassword.getText().toString();
+                                               if (username.equals("Admin") && password.equals("123")) {
+                                                   Toast.makeText(MainActivity.this, "Login successful",
+                                                           Toast.LENGTH_SHORT).show();
+                                               } else {
+                                                   Toast.makeText(MainActivity.this, "Invalid username or password",
+                                                           Toast.LENGTH_SHORT).show();
+                                               }
+                                           }
+                                       }
+        );
+    }
+}
+
+
+
+
+
+
+Slip no.6 Q.2 Write a program to search a specific location on Google Map
+
+XML FILE
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/locationInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter location"
+        android:inputType="text"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search on Map"
+        android:layout_marginTop="20dp" />
+</LinearLayout>
+
+
+JAVA FILE
+
+package com.example.myapplication;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText locationInput;
+    Button searchButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        locationInput = findViewById(R.id.locationInput);
+        searchButton = findViewById(R.id.searchButton);
+
+        searchButton.setOnClickListener(v -> {
+            String location = locationInput.getText().toString().trim();
+
+            if (!location.isEmpty()) {
+                Uri uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + Uri.encode(location));
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            } else {
+                Toast.makeText(MainActivity.this, "Please enter a location", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}

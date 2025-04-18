@@ -1,0 +1,220 @@
+Slip no.10 Q.1
+
+XML FILE
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/getnum"
+        android:hint="Enter a number"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/checkBtn"
+        android:text="Check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
+
+JAVA FILE
+package com.example.myapplication;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText getnum;
+    Button checkBtn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        getnum = findViewById(R.id.getnum);
+        checkBtn = findViewById(R.id.checkBtn);
+
+        checkBtn.setOnClickListener(v -> {
+            String input = getnum.getText().toString().trim();
+
+            if (input.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Please enter a number", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int num = Integer.parseInt(input);
+            if (isArmstrong(num)) {
+                Toast.makeText(MainActivity.this, num + " is an Armstrong number", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, num + " is not an Armstrong number", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean isArmstrong(int number) {
+        int original = number;
+        int sum = 0;
+        int digits = String.valueOf(number).length();
+
+        while (number > 0) {
+            int digit = number % 10;
+            sum += Math.pow(digit, digits);
+            number /= 10;
+        }
+        return sum == original;
+    }
+}
+
+
+
+
+Slip no.10 Q.2
+
+XML FILE
+-----------------
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/design_default_color_secondary"
+tools:context=".MainActivity">
+<ImageButton
+android:id="@+id/imageButton"
+android:layout_width="191dp"
+android:layout_height="158dp"
+tools:layout_editor_absoluteX="89dp"
+tools:layout_editor_absoluteY="1dp"
+tools:srcCompat="@tools:sample/avatars" />
+<EditText
+android:id="@+id/editTextText"
+android:layout_width="406dp"
+android:layout_height="84dp"
+android:ems="10"
+android:inputType="text"
+android:text="Profile"
+android:textSize="40dp"
+app:layout_constraintEnd_toEndOf="parent"
+tools:layout_editor_absoluteY="159dp" />
+<ToggleButton
+android:id="@+id/toggleButton"
+android:layout_width="124dp"
+android:layout_height="49dp"
+android:checked="true"
+android:text="ToggleButton"
+tools:layout_editor_absoluteX="246dp"
+tools:layout_editor_absoluteY="255dp" />
+<TextView
+android:id="@+id/textView"
+android:layout_width="202dp"
+android:layout_height="43dp"
+android:layout_marginEnd="24dp"
+android:text="Active Status"
+android:textSize="30dp"
+app:layout_constraintEnd_toStartOf="@+id/toggleButton"
+tools:layout_editor_absoluteY="255dp" />
+<CheckBox
+android:id="@+id/checkBox"
+android:layout_width="120dp"
+android:layout_height="54dp"
+android:text="Single"
+android:textSize="20dp"
+tools:layout_editor_absoluteX="20dp"
+tools:layout_editor_absoluteY="362dp" />
+<CheckBox
+android:id="@+id/checkBox2"
+android:layout_width="128dp"
+android:layout_height="50dp"
+android:text="Married"
+android:textSize="20dp"
+tools:layout_editor_absoluteX="152dp"
+tools:layout_editor_absoluteY="362dp" />
+<RadioButton
+android:id="@+id/radioButton"
+android:layout_width="106dp"
+android:layout_height="44dp"
+android:text="Male"
+android:textSize="20dp"
+tools:layout_editor_absoluteX="19dp"
+tools:layout_editor_absoluteY="476dp" />
+<EditText
+android:id="@+id/editTextText2"
+android:layout_width="115dp"
+android:layout_height="45dp"
+android:ems="10"
+android:inputType="text"
+android:text="Gender"
+android:textSize="25dp"
+tools:layout_editor_absoluteX="19dp"
+tools:layout_editor_absoluteY="425dp" />
+<RadioButton
+android:id="@+id/radioButton2"
+android:layout_width="112dp"
+android:layout_height="46dp"
+android:text="Female"
+android:textSize="20dp"
+tools:layout_editor_absoluteX="125dp"
+tools:layout_editor_absoluteY="474dp" />
+<RadioGroup
+android:id="@+id/radioGroup"
+android:layout_width="458dp"
+android:layout_height="142dp"
+android:layout_centerInParent="true"
+tools:layout_editor_absoluteX="16dp"
+tools:layout_editor_absoluteY="570dp">
+<RadioButton
+android:id="@+id/javaRB"
+android:layout_width="200dp"
+android:layout_height="wrap_content"
+android:checked="false"
+android:padding="4dp"
+android:text="Java"
+android:textSize="20sp" />
+<RadioButton
+android:id="@+id/cRB"
+android:layout_width="200dp"
+android:layout_height="wrap_content"
+android:checked="false"
+android:padding="4dp"
+android:text="C++"
+android:textSize="20sp" />
+<RadioButton
+android:id="@+id/pythonRB"
+android:layout_width="200dp"
+android:layout_height="wrap_content"
+android:checked="false"
+android:padding="4dp"
+android:text="Python"
+android:textSize="20sp" />
+</RadioGroup>
+<TextView
+android:id="@+id/textView2"
+android:layout_width="92dp"
+android:layout_height="42dp"
+android:text="Skills"
+android:textSize="25dp"
+tools:layout_editor_absoluteX="21dp"
+tools:layout_editor_absoluteY="528dp" />
+<TextView
+android:id="@+id/textView3"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Marital Status"
+android:textSize="25dp"
+tools:layout_editor_absoluteX="21dp"
+tools:layout_editor_absoluteY="314dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

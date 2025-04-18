@@ -1,0 +1,191 @@
+
+Slip no.2 Q.1 Create an application that allows the user to enter a number in the textbox.
+Check whether the number in the textbox is perfect number or not. Print the
+message using Toast control
+ANS=>
+
+XML FILE
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="#FAFAFA">
+
+    <EditText
+        android:id="@+id/numberInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"
+        android:inputType="number"
+        android:padding="12dp"
+        android:background="@android:drawable/edit_text" />
+
+    <Button
+        android:id="@+id/checkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Perfect Number"
+        android:layout_marginTop="20dp"
+        android:padding="10dp" />
+</LinearLayout>
+
+JAVA FILE
+
+
+package com.example.myapplication;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText numberInput;
+    Button checkButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        numberInput = findViewById(R.id.numberInput);
+        checkButton = findViewById(R.id.checkButton);
+
+        checkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String inputText = numberInput.getText().toString();
+
+                if (inputText.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please enter a number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int num = Integer.parseInt(inputText);
+                if (isPerfect(num)) {
+                    Toast.makeText(MainActivity.this, num + " is a Perfect Number", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, num + " is NOT a Perfect Number", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    // Function to check if a number is perfect
+    private boolean isPerfect(int n) {
+        if (n <= 1) return false;
+        int sum = 1;
+        for (int i = 2; i <= n / 2; i++) {
+            if (n % i == 0) sum += i;
+        }
+        return sum == n;
+    }
+}
+
+
+
+
+
+
+Slip no.2 Q2
+
+#XML FILE
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+tools:context=".MainActivity">
+<EditText
+android:id="@+id/num1"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Number 1" />
+<EditText
+android:id="@+id/num2"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Number 2" />
+<EditText
+android:id="@+id/result"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:hint="Result" />
+<Button
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:onClick="add"
+android:text="+" />
+<Button
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:onClick="subtract"
+android:text="-" />
+<Button
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:onClick="multiply"
+android:text="*" />
+</LinearLayout>
+
+
+
+#JAVA FILE
+
+package com.example.pra16;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+public class MainActivity extends AppCompatActivity {
+EditText num1;
+EditText num2;
+EditText result;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+num1 = findViewById(R.id.num1);
+num2 = findViewById(R.id.num2);
+result = findViewById(R.id.result);
+}
+public void add(View view) {
+double num1Value = Double.parseDouble(num1.getText().toString());
+double num2Value = Double.parseDouble(num2.getText().toString());
+double sum = num1Value + num2Value;
+result.setText(String.valueOf(sum));
+}
+public void subtract(View view) {
+double num1Value = Double.parseDouble(num1.getText().toString());
+double num2Value = Double.parseDouble(num2.getText().toString());
+double difference = num1Value - num2Value;
+result.setText(String.valueOf(difference));
+}
+public void multiply(View view) {
+double num1Value = Double.parseDouble(num1.getText().toString());
+double num2Value = Double.parseDouble(num2.getText().toString());
+double product = num1Value * num2Value;
+result.setText(String.valueOf(product));
+}
+public void divide(View view) {
+double num1Value = Double.parseDouble(num1.getText().toString());
+double num2Value = Double.parseDouble(num2.getText().toString());
+if (num2Value == 0) {
+result.setText("Cannot divide by zero");
+return;
+}
+double quotient = num1Value / num2Value;
+result.setText(String.valueOf(quotient));
+}
+}
+
